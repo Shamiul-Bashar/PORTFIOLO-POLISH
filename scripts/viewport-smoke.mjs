@@ -45,6 +45,15 @@ async function main() {
       page.on("pageerror", (error) => errors.push(error.message));
       await page.goto(url, { waitUntil: "domcontentloaded", timeout: 45000 });
       await page.locator("#top").waitFor({ state: "visible", timeout: 12000 });
+      // The Hero is revealed before its GSAP word/paragraph entrance completes.
+      // Wait for the FINAL visible state, not the initial blank animation frame.
+      await page.waitForFunction(() => {
+        const title = document.querySelector(".hero-word");
+        const intro = document.querySelector(".hero-introduction");
+        return !!title && !!intro &&
+          Number(getComputedStyle(title).opacity) > 0.98 &&
+          Number(getComputedStyle(intro).opacity) > 0.98;
+      }, null, { timeout: 12000 });
       await page.locator("#upcoming-projects").waitFor({ state: "attached" });
       await page.evaluate(async () => { await document.fonts.ready; });
 
@@ -64,7 +73,23 @@ async function main() {
       if (metrics.sections.indexOf("upcoming-projects") < metrics.sections.indexOf("work")) throw new Error(`${width}px: invalid section order`);
       if (errors.length) throw new Error(`${width}px: runtime error: ${errors[0]}`);
       await page.screenshot({ path: join(output, `homepage-${width}.png`), animations: "disabled" });
-      console.log(`PASS ${width}px: no horizontal overflow, correct project placement, no runtime exception`);
+
+      if (width === 390 || width === 1280) {
+        await page.locator("#work").scrollIntoViewIfNeeded();
+        await page.waitForTimeout(1150);
+        const weddingImage = page.locator("#work img.project-art-image");
+        await weddingImage.first().waitFor({ state: "visible", timeout: 15000 });
+        await page.waitForFunction(() => {
+          const preview = document.querySelector("#work img.project-art-image");
+          return !!preview && preview.complete && preview.naturalWidth > 0;
+        }, null, { timeout: 15000 });
+        await page.locator("#work").screenshot({ path: join(output, `selected-work-${width}.png`), animations: "disabled" });
+
+        await page.locator("#upcoming-projects").scrollIntoViewIfNeeded();
+        await page.waitForTimeout(1150);
+        await page.locator("#upcoming-projects").screenshot({ path: join(output, `upcoming-${width}.png`), animations: "disabled" });
+      }
+      console.log(`PASS ${width}px: hero readable, no overflow, correct project placement, no runtime exception`);
       await page.close();
     }
     const casePage = await browser.newPage();
