@@ -1,31 +1,30 @@
 import {
   ArrowUp,
-  Code2,
   Facebook,
   Github,
-  Twitter,
   Linkedin,
   Mail,
-  Phone,
 } from "lucide-react";
 import Link from "next/link";
-import type { LucideIcon } from "lucide-react";
+import type { LucideProps } from "lucide-react";
+import type { ComponentType } from "react";
 import { Container } from "@/components/ui/container";
 import { site } from "@/data/site";
+import { CodeforcesBrandIcon, WhatsAppBrandIcon, XBrandIcon } from "@/components/ui/brand-icons";
 
 const footerSocials: {
   label: string;
   href: string;
-  Icon: LucideIcon;
+  Icon: ComponentType<LucideProps>;
   external?: boolean;
 }[] = [
   { label: "GitHub", href: site.links.github, Icon: Github, external: true },
   { label: "LinkedIn", href: site.links.linkedin, Icon: Linkedin, external: true },
-  { label: "Codeforces", href: site.links.codeforces, Icon: Code2, external: true },
+  { label: "Codeforces", href: site.links.codeforces, Icon: CodeforcesBrandIcon, external: true },
   { label: "Email", href: `mailto:${site.email}`, Icon: Mail },
-  { label: "WhatsApp", href: site.links.whatsapp, Icon: Phone, external: true },
+  { label: "WhatsApp", href: site.links.whatsapp, Icon: WhatsAppBrandIcon, external: true },
   { label: "Facebook", href: site.links.facebook, Icon: Facebook, external: true },
-  { label: "X", href: site.links.x, Icon: Twitter, external: true },
+  { label: "X", href: site.links.x, Icon: XBrandIcon, external: true },
 ];
 
 const footerLinks = [
