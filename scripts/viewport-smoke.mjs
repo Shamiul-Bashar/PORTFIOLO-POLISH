@@ -30,6 +30,7 @@ async function main() {
     cwd: process.cwd(),
     env: { ...process.env, PORT: "4173" },
     stdio: ["ignore", "pipe", "pipe"],
+    detached: process.platform !== "win32",
   });
   let outputLog = "";
   server.stdout.on("data", (buffer) => { outputLog += buffer.toString(); });
@@ -74,7 +75,15 @@ async function main() {
     console.log("PASS: Wedding case-study route");
   } finally {
     await browser?.close();
-    server.kill("SIGTERM");
+    try {
+      if (process.platform !== "win32" && server.pid) {
+        process.kill(-server.pid, "SIGTERM");
+      } else {
+        server.kill("SIGTERM");
+      }
+    } catch { server.kill("SIGTERM"); }
+    server.stdout?.destroy();
+    server.stderr?.destroy();
     if (outputLog.includes("Error:")) console.log("Server notes:", outputLog.slice(-2000));
   }
 }
