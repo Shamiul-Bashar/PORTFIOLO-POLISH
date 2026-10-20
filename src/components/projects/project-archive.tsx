@@ -180,7 +180,7 @@ export function ProjectArchive() {
               <div className="archive-group-heading">
                 <div>
                   <p className="archive-group-status archive-group-status-development"><Clock3 size={15} aria-hidden="true" /> IN DEVELOPMENT</p>
-                  <h2 id="archive-development-heading" className="display">WHAT'S <span>NEXT.</span></h2>
+                  <h2 id="archive-development-heading" className="display">WHAT&apos;S <span>NEXT.</span></h2>
                 </div>
                 <span className="archive-group-total">{String(upcomingVisible.length).padStart(2, "0")} PROJECTS</span>
               </div>
