@@ -3,10 +3,10 @@
  * Run after npm run build and installing Playwright/Chromium. */
 "use strict";
 
-const { chromium } = require("playwright");
-const { spawn } = require("node:child_process");
-const { mkdirSync } = require("node:fs");
-const { join } = require("node:path");
+import { chromium } from "playwright";
+import { spawn } from "node:child_process";
+import { mkdirSync } from "node:fs";
+import { join } from "node:path";
 
 const url = "http://127.0.0.1:4173";
 const widths = [360, 390, 768, 1280, 1440];
