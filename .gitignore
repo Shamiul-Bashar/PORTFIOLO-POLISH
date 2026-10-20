@@ -1,0 +1,33 @@
+node_modules/
+.next/
+out/
+build/
+*.tsbuildinfo
+.env*
+!.env.example
+.DS_Store
+*.log
+
+# Generated caches and temporary files
+dist/
+coverage/
+.turbo/
+.cache/
+.vercel/
+tmp/
+temp/
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Local credentials and private keys
+.npmrc
+.netrc
+credentials.json
+service-account*.json
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore

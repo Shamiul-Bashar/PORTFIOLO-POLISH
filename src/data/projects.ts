@@ -1,0 +1,88 @@
+import type { PortfolioProject } from "@/types/project";
+
+// Only add a screenshot when you own the image and its path is verified.
+// Content is intentionally concise: improve individual case studies as you gather evidence.
+export const projects: PortfolioProject[] = [
+  {
+    slug: "crisismesh-web",
+    title: "CrisisMesh 2.0",
+    category: "Web Application",
+    eyebrow: "Emergency decision & routing",
+    shortDescription: "A decision-support simulation for incident routing, station selection, and resource allocation.",
+    overview: "CrisisMesh 2.0 explores how graph algorithms and emergency response workflows can work together in an interactive application.",
+    contribution: "Worked on routing logic, graph-based decision workflows, and the user-facing application.",
+    highlights: ["Graph-based emergency routing", "BFS, DFS, and Dijkstra algorithm workflows", "Incident and resource management concepts"],
+    technologies: ["C++", "React", "TypeScript", "Graph Algorithms"],
+    repository: "https://github.com/Shamiul-Bashar/CrisisMesh-2.0-Dynamic-Emergency-Decision-Routing-Resource-Allocation-Simulator",
+    demo: "https://crisis-mesh-2-0-dynamic-emergency-d.vercel.app",
+    featured: true,
+  },
+  {
+    slug: "academicos",
+    title: "AcademicOS",
+    category: "Mobile & Web",
+    eyebrow: "Student productivity",
+    shortDescription: "A cross-platform academic productivity app focused on routine planning and attendance tracking.",
+    overview: "AcademicOS is a mobile and web application project designed around the everyday academic workflow of university students.",
+    contribution: "Designed and developed application screens and workflows for student productivity features.",
+    highlights: ["Editable class routines", "Attendance tracking workflows", "Cross-platform interface development"],
+    technologies: ["React Native", "Expo", "TypeScript", "Supabase"],
+    featured: true,
+  },
+  {
+    slug: "28-bit-cpu",
+    title: "Custom 28-bit CPU",
+    category: "Computer Architecture",
+    eyebrow: "Architecture & digital logic",
+    shortDescription: "A custom processor design exploring instruction execution and hardware-level integration.",
+    overview: "A team-based computer architecture project focused on constructing and integrating parts of a 28-bit CPU design.",
+    contribution: "Participated in the team project exploring the processor datapath, control logic, and integration.",
+    highlights: ["Instruction-level architecture", "Booth multiplication subsystem", "Control and datapath integration"],
+    technologies: ["Computer Architecture", "Digital Logic", "CPU Design"],
+    repository: "https://github.com/Shamiul-Bashar/28-BIT-CPU",
+    featured: true,
+  },
+  {
+    slug: "crisismesh-console",
+    title: "CrisisMesh Console Edition",
+    category: "Software Systems",
+    eyebrow: "C++17 & data structures",
+    shortDescription: "A console-based emergency routing simulator built around data structures and search algorithms.",
+    overview: "A C++17 console implementation of incident management, route selection, and resource allocation workflows.",
+    contribution: "Worked on graph routing and core data-structure integration.",
+    highlights: ["Dijkstra routing and priority queues", "DFS and graph traversal", "Stack-driven road management workflows"],
+    technologies: ["C++17", "DSA", "Dijkstra", "Graph"],
+    repository: "https://github.com/Shamiul-Bashar/Console-Based-CrisisMesh-2.0-Dynamic-Emergency-Decision-Routing-Resource-Allocation-Simulator",
+    featured: false,
+  },
+  {
+    slug: "hydrosmart",
+    title: "HydroSmart",
+    category: "Software Systems",
+    eyebrow: "C++ & OOP",
+    shortDescription: "A console-based water grid management project exploring modular OOP and persistent records.",
+    overview: "An academic C++ project that models water grid workflows with modular design and persistent data handling.",
+    contribution: "Built the C++ project using object-oriented patterns and file-based data handling.",
+    highlights: ["Modular OOP architecture", "Data persistence", "Grid health and demand analysis"],
+    technologies: ["C++", "OOP", "STL", "File I/O"],
+    repository: "https://github.com/Shamiul-Bashar/hydro-smart",
+    featured: false,
+  },
+  {
+    slug: "fpga-number-game",
+    title: "FPGA Number Guessing Game",
+    category: "Embedded Systems",
+    eyebrow: "Verilog & FPGA",
+    shortDescription: "A hardware-native two-player number guessing game developed for the Basys 3 FPGA board.",
+    overview: "A Verilog HDL project that combines an LFSR-based number generator with user inputs and FPGA display feedback.",
+    contribution: "Contributed to the team's hardware design and FPGA implementation.",
+    highlights: ["Finite state machine", "LFSR pseudo-random generator", "Seven-segment and LED feedback"],
+    technologies: ["Verilog", "Vivado", "Basys 3", "FSM"],
+    repository: "https://github.com/Shamiul-Bashar/hardware-number-guesser",
+    featured: false,
+  },
+];
+
+export const featuredProjects = projects.filter((project) => project.featured);
+export const otherProjects = projects.filter((project) => !project.featured);
+export const getProject = (slug: string) => projects.find((project) => project.slug === slug);
