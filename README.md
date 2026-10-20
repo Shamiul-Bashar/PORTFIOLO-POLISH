@@ -23,6 +23,23 @@ npm run build
 
 *Fonts:* `next/font/google` downloads **Bebas Neue** and **Inter** at build time; a first build needs network access. If the download fails in a restricted environment, run locally on a network-connected machine; do not distribute bundled font binaries.
 
+## Ask Siam AI — original concept, redesigned
+
+The portfolio includes **Ask Siam AI**, a floating bottom-right personal knowledge assistant on every page. Its architecture is grounded in the original `Shamiul-Bashar/PORTFOLIO` (global launcher + chat panel + quick actions + intent classification + contextual project follow-up); the older repository remains untouched.
+
+- **Placement:** global floating button, bottom right; responsive in-page chat panel on desktop, tablet and mobile.
+- **Identity:** matte-black, restrained premium-yellow and silver-grey palette matching the current site. No cyan-blue gradients.
+- **Knowledge:** automatically derived from `src/data/site.ts`, `projects.ts`, `upcoming-projects.ts`, `education.ts`, `skills.ts`, `achievements.ts` and `learning.ts` — including six completed and three in-development projects.
+- **Behavior:** 6 working quick prompts, conversational project follow-up context, GitHub/profile ambiguity handling, accessible send/reset/close controls, Escape key and focus management, real detail/repository/demo/contact/resume links.
+- **Honest architecture:** fully local deterministic portfolio-knowledge assistant, **not an LLM or external AI API**. No API keys, visitor question logging, external message transmission, or invented responses.
+- **Sources:** `src/lib/siam-assistant.ts` (knowledge and rules), `src/components/ui/ask-siam-ai/` (React UI and CSS module), mounted once in `src/app/layout.tsx`.
+
+Run `npm run typecheck && npm run lint && npm run build`. GitHub Actions also runs Chromium smoke checks at 390px and 1280px for the assistant, including project-specific question follow-ups.
+
+## Current project archive
+
+The `/projects` page indexes **9 projects**: 6 completed and 3 in development, with functional status filters and search. AcademicOS is categorized as in development; the Araf & Azreen Wedding experience appears among completed work. The hero portrait remains intentionally subject to a later image update.
+
 ## Sections (as requested in the supplied reference analysis)
 
 | Location | Component | Designed behavior |
@@ -35,7 +52,7 @@ npm run build
 | `/#education` | `sections/education.tsx` | KUET degree information |
 | optional | `sections/credentials.tsx` | Certificates / achievements appear only after real entries are added |
 | `/#contact` | `sections/contact.tsx` | Oversized dark CTA and genuine contact links |
-| `/projects` | `app/projects/page.tsx` | Archive of all six projects |
+| `/projects` | `app/projects/page.tsx` | Archive of 6 completed and 3 in-development projects |
 | `/projects/[slug]` | `app/projects/[slug]/page.tsx` | Data-driven detailed project case study |
 
 ## Repository structure

@@ -161,6 +161,50 @@ async function main() {
       console.log(`PASS archive ${width}px: all 9 items, interactive filters and search, no overflow`);
     }
 
+
+    // Ask Siam AI: preserve the old floating-global placement, current-project
+    // follow-up context, working quick prompts and mobile/laptop accessible UI.
+    for (const width of [390, 1280]) {
+      const page = await browser.newPage({ viewport: { width, height: 850 }, deviceScaleFactor: 1 });
+      const errors = [];
+      page.on("pageerror", (error) => errors.push(error.message));
+      await page.goto(url + "/projects", { waitUntil: "domcontentloaded", timeout: 45000 });
+      const trigger = page.locator("[data-ask-siam-trigger]");
+      await trigger.waitFor({ state: "visible" });
+      if ((await trigger.getAttribute("aria-expanded")) !== "false") throw new Error("Assistant trigger should default closed");
+      await trigger.click();
+      const panel = page.locator("[data-ask-siam-panel]");
+      await panel.waitFor({ state: "visible" });
+      const bounds = await panel.boundingBox();
+      if (!bounds || bounds.x < -2 || bounds.x + bounds.width > width + 2 || bounds.y < 0) {
+        throw new Error(`Assistant ${width}px: panel leaves the viewport`);
+      }
+      await panel.getByRole("button", { name: /all projects/i }).click();
+      await page.getByText("There are 9 listed projects", { exact: false }).waitFor({ timeout: 15000 });
+
+      const input = page.locator("[data-ask-siam-input]");
+      await input.fill("Tell me about AcademicOS");
+      await input.press("Enter");
+      await page.getByText("ACADEMICOS — In Development", { exact: false }).waitFor({ timeout: 15000 });
+      await input.fill("What technologies does it use?");
+      await input.press("Enter");
+      await page.getByText("ACADEMICOS uses or explores:", { exact: false }).waitFor({ timeout: 15000 });
+      await page.locator("[data-ask-siam-panel]").getByRole("button", { name: "Reset conversation" }).click();
+      if (await page.locator('[data-ask-siam-message="assistant"]').count() !== 1) throw new Error("Reset failed");
+
+      await page.screenshot({ path: join(output, `ask-siam-ai-${width}.png`), animations: "disabled" });
+      await page.keyboard.press("Escape");
+      if (await panel.count()) throw new Error("Escape failed to close Ask Siam AI");
+      if ((await trigger.getAttribute("aria-expanded")) !== "false") throw new Error("Assistant aria-expanded not reset");
+      await trigger.click();
+      if (!(await panel.isVisible())) throw new Error("Assistant fails to reopen");
+      if (errors.length) throw new Error(`Assistant ${width}px runtime error: ${errors.join(" | ")}`);
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      if (overflow > 3) throw new Error(`Assistant ${width}px overflow: ${overflow}px`);
+      await page.close();
+      console.log(`PASS Ask Siam AI ${width}px: global trigger, grounded replies, context, reset, Escape, layout`);
+    }
+
     const casePage = await browser.newPage();
     const resp = await casePage.goto(url + "/projects/araf-azreen-wedding", { waitUntil: "domcontentloaded" });
     if (!resp?.ok()) throw new Error("Wedding project case-study route unavailable");

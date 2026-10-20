@@ -102,7 +102,7 @@ export function SiteFooter() {
 
         <div className="footer-bottom">
           <div className="footer-legal">
-            <p>© {new Date().getFullYear()} MD Shamiul Basher Siam. All Rights Reserved.</p>
+            <p>© {new Date().getFullYear()} MD Shamiul Bashar Siam. All Rights Reserved.</p>
             <p>Built with Next.js, React, TypeScript &amp; Tailwind CSS.</p>
           </div>
           <Link className="footer-back-top" href="/#top">
