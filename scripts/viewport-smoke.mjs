@@ -225,12 +225,21 @@ async function main() {
       await page.locator("[data-intro-overlay='true']").waitFor({ state: "detached", timeout: 12000 });
       let submissions = 0;
       await page.route("https://api.emailjs.com/api/v1.0/email/send", async (route) => {
+        const cors = {
+          "access-control-allow-origin": "*",
+          "access-control-allow-methods": "POST, OPTIONS",
+          "access-control-allow-headers": "content-type",
+        };
+        if (route.request().method() === "OPTIONS") {
+          await route.fulfill({ status: 204, headers: cors });
+          return;
+        }
         const payload = route.request().postDataJSON();
         if (payload.service_id !== "service_5pdvxyq" || payload.template_params.from_email !== "visitor@example.com") {
           throw new Error("Contact form payload invalid");
         }
         submissions += 1;
-        await route.fulfill({ status: 200, body: "OK", contentType: "text/plain" });
+        await route.fulfill({ status: 200, body: "OK", contentType: "text/plain", headers: cors });
       });
       await page.locator('input[name="name"]').fill("Site Visitor");
       await page.locator('input[name="email"]').fill("visitor@example.com");
