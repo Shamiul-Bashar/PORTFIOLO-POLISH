@@ -6,7 +6,7 @@ export const site = {
   institution: "Khulna University of Engineering & Technology (KUET)",
   summary: "CSE undergraduate exploring software engineering, algorithms, digital systems, and products that solve practical problems.",
   profile: {
-    fullName: "MD. Shamiul Basher Siam",
+    fullName: "MD. Shamiul Bashar Siam",
     nationality: "Bangladeshi",
     degree: "Bachelor of Science",
     department: "Computer Science & Engineering",

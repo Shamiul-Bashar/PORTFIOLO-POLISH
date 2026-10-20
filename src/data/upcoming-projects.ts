@@ -4,7 +4,7 @@ export type UpcomingProject = {
   description: string;
   technologies: string[];
   repository: string;
-  cover: "agent" | "genome";
+  cover: "agent" | "genome" | "academic";
 };
 
 export const upcomingProjects: UpcomingProject[] = [
@@ -25,5 +25,14 @@ export const upcomingProjects: UpcomingProject[] = [
     technologies: ["Next.js", "FastAPI", "Python", "PostgreSQL"],
     repository: "https://github.com/Shamiul-Bashar/genosearch",
     cover: "genome",
+  },
+  {
+    name: "ACADEMICOS",
+    category: "STUDENT PRODUCTIVITY / MOBILE & WEB",
+    description:
+      "A cross-platform academic productivity application in development, focused on editable class routines, attendance tracking, and student workflows.",
+    technologies: ["React Native", "Expo", "TypeScript", "Supabase"],
+    repository: "https://github.com/Shamiul-Bashar/AcademicOS",
+    cover: "academic",
   },
 ];

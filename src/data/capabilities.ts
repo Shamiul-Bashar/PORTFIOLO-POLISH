@@ -4,7 +4,7 @@ export type Capability = {
   category: string;
   description: string;
   technologies: string[];
-  relatedProjects: { name: string; slug: string }[];
+  relatedProjects: { name: string; slug?: string; href?: string }[];
 };
 
 export const specializedSkills = [
@@ -36,7 +36,7 @@ export const capabilities: Capability[] = [
     description:
       "Designing student-focused applications that simplify routine management, attendance tracking, and everyday academic workflows.",
     technologies: ["React Native", "Expo", "TypeScript"],
-    relatedProjects: [{ name: "AcademicOS", slug: "academicos" }],
+    relatedProjects: [{ name: "AcademicOS — In Development", href: "/#upcoming-projects" }],
   },
   {
     number: "03",

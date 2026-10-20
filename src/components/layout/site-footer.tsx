@@ -47,7 +47,7 @@ export function SiteFooter() {
       <Container>
         <div className="footer-columns">
           <section className="footer-brand-column" aria-labelledby="footer-brand-title">
-            <h2 id="footer-brand-title">Shamiul Basher Siam</h2>
+            <h2 id="footer-brand-title">Shamiul Bashar Siam</h2>
             <p>
               Computer Science &amp; Engineering student at Khulna University of
               Engineering &amp; Technology (KUET), focused on software

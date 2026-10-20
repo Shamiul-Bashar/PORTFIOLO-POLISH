@@ -201,7 +201,7 @@ export function Hero() {
             </nav>
           </div>
         </div>
-        <div className="hero-scroll hero-reveal"><span>SCROLL TO EXPLORE</span><Link href="/#expertise" aria-label="Scroll to expertise section"><ArrowDown size={17} aria-hidden="true" /></Link></div>
+        <div className="hero-scroll hero-reveal"><span>SCROLL TO EXPLORE</span><Link href="/#about" aria-label="Scroll to about section"><ArrowDown size={17} aria-hidden="true" /></Link></div>
       </Container>
     </section>
   );
