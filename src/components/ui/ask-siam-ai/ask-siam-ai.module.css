@@ -137,6 +137,17 @@
 .footnote { margin: 0; padding: 0 16px 12px; background: #111; text-align: center; color: #858585; font-size: 9px; letter-spacing: .01em; }
 @keyframes panelEnter { from { opacity: 0; transform: translateY(12px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes pulse { from { opacity: .28; transform: translateY(0); } to { opacity: 1; transform: translateY(-3px); } }
+.starters { display: grid; gap: 7px; margin-top: 4px; max-width: 93%; }
+.starters > p { margin: 0 0 3px; color: #8f8f8f; font-size: 9px; letter-spacing: .13em; font-weight: 700; }
+.starters button {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  min-height: 42px; padding: 10px 12px; text-align: left; border: 1px solid rgba(255,255,255,.13);
+  border-radius: 4px; background: #131313; color: #d6d6d6;
+  font-size: 11px; font-weight: 500; line-height: 1.4; transition: color .2s, border-color .2s, background .2s;
+}
+.starters button svg { flex: 0 0 auto; color: var(--ai-yellow); }
+.starters button:hover { border-color: rgba(244,204,39,.48); background: #1c1b14; color: #fff; }
+
 @media (max-width: 630px) {
   .widget { right: max(12px, env(safe-area-inset-right)); bottom: max(12px, env(safe-area-inset-bottom)); }
   .floatingButton { width: 56px; height: 56px; }
@@ -148,12 +159,14 @@
     min-height: min(360px, calc(100dvh - 95px));
     border-radius: 11px;
   }
-  .assistantBubble, .userBubble { max-width: 93%; font-size: 12px; }
+  .assistantBubble, .userBubble { max-width: 93%; font-size: 13px; }
   .header { padding: 14px; }
   .transcript { padding: 16px 13px; }
   .introLine { padding-inline: 14px; font-size: 8px; }
   .promptList { scroll-snap-type: x proximity; }
-  .prompt { scroll-snap-align: start; }
+  .prompt { scroll-snap-align: start; min-height: 42px; font-size: 11px; }
+  .form input { font-size: 16px; /* Prevent iOS Safari auto-zoom when the keyboard opens. */ }
+  .starters { max-width: 100%; }
 }
 @media (max-height: 550px) {
   .panel { height: calc(100dvh - 82px); min-height: 0; }

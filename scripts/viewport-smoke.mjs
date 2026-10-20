@@ -175,6 +175,9 @@ async function main() {
       await trigger.click();
       const panel = page.locator("[data-ask-siam-panel]");
       await panel.waitFor({ state: "visible" });
+      if (await page.locator("[data-ask-siam-starters] button").count() !== 3) {
+        throw new Error(`Assistant ${width}px: starter questions missing`);
+      }
       const bounds = await panel.boundingBox();
       if (!bounds || bounds.x < -2 || bounds.x + bounds.width > width + 2 || bounds.y < 0) {
         throw new Error(`Assistant ${width}px: panel leaves the viewport`);

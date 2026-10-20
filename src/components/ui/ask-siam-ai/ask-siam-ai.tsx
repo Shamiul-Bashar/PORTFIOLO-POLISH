@@ -30,6 +30,12 @@ const PROMPTS = [
   { label: "Contact", query: "How can I contact Siam?" },
 ] as const;
 
+const STARTER_QUESTIONS = [
+  { label: "What makes the wedding website special?", query: "Tell me about the wedding website" },
+  { label: "Which projects are being developed?", query: "What is currently in development?" },
+  { label: "How was CrisisMesh built?", query: "Tell me about CrisisMesh 2" },
+] as const;
+
 export function AskSiamAI() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
@@ -170,6 +176,16 @@ export function AskSiamAI() {
                 </div>
               </div>
             ))}
+            {messages.length === 1 && !replyPending && (
+              <div className={styles.starters} data-ask-siam-starters>
+                <p>START WITH A QUESTION</p>
+                {STARTER_QUESTIONS.map((question) => (
+                  <button type="button" key={question.label} onClick={() => send(question.query)}>
+                    {question.label} <ArrowUpRight size={14} aria-hidden="true" />
+                  </button>
+                ))}
+              </div>
+            )}
             {replyPending && (
               <div className={styles.messageAssistantRow} aria-label="Preparing a portfolio answer">
                 <div className={styles.thinking}>
