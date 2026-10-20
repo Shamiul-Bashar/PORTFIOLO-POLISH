@@ -213,7 +213,7 @@ async function main() {
     // Verify both the self-hosted resume and real CrisisMesh screenshot are shipped.
     for (const asset of ["/Shamiul-Bashar-Siam-Resume.pdf", "/projects/crisismesh-web.png"]) {
       const response = await fetch(url + asset);
-      if (!response.ok()) throw new Error(`Static asset unavailable: ${asset} (${response.status})`);
+      if (!response.ok) throw new Error(`Static asset unavailable: ${asset} (${response.status})`);
       console.log(`PASS static asset: ${asset}`);
     }
 
