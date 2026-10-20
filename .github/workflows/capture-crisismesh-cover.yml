@@ -1,0 +1,58 @@
+name: Capture CrisisMesh Web cover
+
+on:
+  push:
+    paths:
+      - .github/workflows/capture-crisismesh-cover.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install screenshot tooling
+        run: |
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Capture actual CrisisMesh web app
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from "playwright";
+          import { mkdirSync } from "node:fs";
+          const browser = await chromium.launch({headless: true, args: ["--no-sandbox"]});
+          try {
+            const page = await browser.newPage({viewport: {width: 1366, height: 768}, deviceScaleFactor: 1});
+            const response = await page.goto("https://crisis-mesh-2-0-dynamic-emergency-d.vercel.app/", {waitUntil: "domcontentloaded", timeout: 60000});
+            if (!response || !response.ok()) throw new Error("Demo page unavailable: " + (response?.status() ?? "no response"));
+            await page.waitForTimeout(5000);
+            const title = await page.title();
+            const body = (await page.locator("body").innerText()).slice(0, 1400);
+            console.log("Page title:", title);
+            console.log("Visible preview:", body.slice(0, 350));
+            if (/authentication required|deployment protection|404.*not found|application error/i.test(title + " " + body)) {
+              throw new Error("Demo shows a protection or error page, refusing to save misleading cover");
+            }
+            mkdirSync("public/projects", {recursive: true});
+            await page.screenshot({path: "public/projects/crisismesh-web.png", type: "png", animations: "disabled"});
+            console.log("Captured public/projects/crisismesh-web.png");
+          } finally {
+            await browser.close();
+          }
+          NODE
+      - name: Commit screenshot into portfolio
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/projects/crisismesh-web.png
+          if ! git diff --cached --quiet; then
+            git commit -m "assets: capture real CrisisMesh web demo cover"
+            git push origin HEAD:main
+          fi
