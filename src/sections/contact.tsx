@@ -56,7 +56,7 @@ export function Contact() {
     const email = String(formData.get("email") ?? "").trim();
     const subject = String(formData.get("subject") ?? "").trim();
     const message = String(formData.get("message") ?? "").trim();
-    if (!name || !email || !subject || !message || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+    if (!name || !email || !subject || !message || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setFormStatusKind("error");
       setFormStatus("Please complete all fields and enter a valid email address.");
       return;
