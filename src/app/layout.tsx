@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll";
 import { LoadingScreen } from "@/components/ui/loading-screen";
+import { AskSiamAI } from "@/components/ui/ask-siam-ai/ask-siam-ai";
 import { site } from "@/data/site";
 import "./globals.css";
 
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SiteHeader />
         <div id="main-content">{children}</div>
         <SiteFooter />
+        <AskSiamAI />
         </LoadingScreen>
       </body>
     </html>

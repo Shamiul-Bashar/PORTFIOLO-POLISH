@@ -15,7 +15,7 @@ export function ProjectCard({ project, index, compact = false, variant }: {
         <Link href={`/projects/${project.slug}`} className="project-card-preview" aria-label={`Open ${project.title} project details`}>
           <div className="project-art">
             {project.image ? (
-              <Image src={project.image} alt="" fill sizes="(max-width: 630px) 88vw, (max-width: 1000px) 46vw, 31vw" className="project-art-image" />
+              <Image src={project.image} alt="" fill unoptimized={project.image.startsWith("https://")} sizes="(max-width: 630px) 88vw, (max-width: 1000px) 46vw, 31vw" className="project-art-image" />
             ) : (
               <div className="project-preview-fallback">
                 <span className="project-preview-note">NO SCREENSHOT</span>
@@ -48,7 +48,7 @@ export function ProjectCard({ project, index, compact = false, variant }: {
     <Link href={`/projects/${project.slug}`} className={`project-card ${compact ? "project-card-compact" : ""}`} aria-label={`Read case study: ${project.title}`}>
       <div className="project-art" aria-hidden="true">
         {project.image ? (
-          <Image src={project.image} alt="" fill sizes="(max-width: 780px) 84vw, 46vw" className="project-art-image" />
+          <Image src={project.image} alt="" fill unoptimized={project.image.startsWith("https://")} sizes="(max-width: 780px) 84vw, 46vw" className="project-art-image" />
         ) : (
           <div className="project-art-fallback">
             <div className="art-topline"><span>BUILD / {String(index + 1).padStart(2,"0")}</span><span>{project.category.toUpperCase()}</span></div>

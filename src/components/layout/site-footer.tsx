@@ -47,7 +47,7 @@ export function SiteFooter() {
       <Container>
         <div className="footer-columns">
           <section className="footer-brand-column" aria-labelledby="footer-brand-title">
-            <h2 id="footer-brand-title">Shamiul Basher Siam</h2>
+            <h2 id="footer-brand-title">Shamiul Bashar Siam</h2>
             <p>
               Computer Science &amp; Engineering student at Khulna University of
               Engineering &amp; Technology (KUET), focused on software
@@ -102,7 +102,7 @@ export function SiteFooter() {
 
         <div className="footer-bottom">
           <div className="footer-legal">
-            <p>© {new Date().getFullYear()} MD Shamiul Basher Siam. All Rights Reserved.</p>
+            <p>© {new Date().getFullYear()} MD Shamiul Bashar Siam. All Rights Reserved.</p>
             <p>Built with Next.js, React, TypeScript &amp; Tailwind CSS.</p>
           </div>
           <Link className="footer-back-top" href="/#top">

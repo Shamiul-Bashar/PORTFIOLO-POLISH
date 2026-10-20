@@ -26,7 +26,7 @@ export function UpcomingProjects() {
           </div>
           <p className="upcoming-description">
             A look at the systems I&apos;m currently building — exploring intelligent
-            automation, software architecture, and computational biology.
+            automation, computational biology, and student productivity tools.
           </p>
         </Reveal>
 
@@ -55,7 +55,7 @@ export function UpcomingProjects() {
                       <span className="agent-network-node agent-node-five" />
                       <span className="agent-network-node agent-node-six" />
                     </div>
-                  ) : (
+                  ) : project.cover === "genome" ? (
                     <div className="genome-sequence">
                       <span>ATGCTAGC</span>
                       <span>TAGCGATC</span>
@@ -64,6 +64,19 @@ export function UpcomingProjects() {
                       <span>ATCGGTCA</span>
                       <span>TCGATGCA</span>
                       <span>GATCCGTA</span>
+                    </div>
+                  ) : (
+                    <div className="academic-calendar" aria-hidden="true">
+                      <span className="academic-calendar-title">WEEKLY ROUTINE</span>
+                      <div className="academic-calendar-days">
+                        {["MON", "TUE", "WED", "THU", "FRI"].map((day) => <span key={day}>{day}</span>)}
+                      </div>
+                      <div className="academic-calendar-slots">
+                        {Array.from({ length: 15 }, (_, slot) => (
+                          <span key={slot} className={slot % 4 === 0 ? "is-active" : ""} />
+                        ))}
+                      </div>
+                      <span className="academic-calendar-footer">A / ATTENDANCE & ROUTINES</span>
                     </div>
                   )}
                   <span className="upcoming-cover-name display">

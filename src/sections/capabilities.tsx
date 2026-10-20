@@ -41,7 +41,7 @@ export function Capabilities() {
               <span>RELATED WORK</span>
               <div>
                 {item.relatedProjects.map((project) => (
-                  <Link key={project.slug} href={`/projects/${project.slug}`}>
+                  <Link key={project.slug ?? project.href ?? project.name} href={project.href ?? (project.slug ? `/projects/${project.slug}` : "/#upcoming-projects")}>
                     {project.name}<ArrowUpRight size={13} aria-hidden="true" />
                   </Link>
                 ))}
