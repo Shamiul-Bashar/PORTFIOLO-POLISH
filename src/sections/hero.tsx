@@ -3,18 +3,19 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { ArrowDown, ArrowUpRight, Code2, Facebook, Github, Twitter, Linkedin, Mail, MoveUpRight, Smartphone } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Facebook, Github, Linkedin, Mail, MoveUpRight } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { site } from "@/data/site";
+import { CodeforcesBrandIcon, WhatsAppBrandIcon, XBrandIcon } from "@/components/ui/brand-icons";
 
 const heroSocialLinks = [
   { label: "GitHub", href: site.links.github, Icon: Github, external: true },
   { label: "LinkedIn", href: site.links.linkedin, Icon: Linkedin, external: true },
-  { label: "Codeforces", href: site.links.codeforces, Icon: Code2, external: true },
+  { label: "Codeforces", href: site.links.codeforces, Icon: CodeforcesBrandIcon, external: true },
   { label: "Email", href: `mailto:${site.email}`, Icon: Mail, external: false },
-  { label: "WhatsApp", href: site.links.whatsapp, Icon: Smartphone, external: true },
+  { label: "WhatsApp", href: site.links.whatsapp, Icon: WhatsAppBrandIcon, external: true },
   { label: "Facebook", href: site.links.facebook, Icon: Facebook, external: true },
-  { label: "X", href: site.links.x, Icon: Twitter, external: true },
+  { label: "X", href: site.links.x, Icon: XBrandIcon, external: true },
 ] as const;
 
 const PROFESSIONAL_ROLES = [

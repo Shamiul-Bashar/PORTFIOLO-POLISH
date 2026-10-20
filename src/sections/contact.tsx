@@ -3,34 +3,33 @@
 import { useState } from "react";
 import {
   ArrowUpRight,
-  Code2,
   Facebook,
   Github,
-  Twitter,
   Linkedin,
   Mail,
   MapPin,
-  Phone,
 } from "lucide-react";
 import type { FormEvent } from "react";
-import type { LucideIcon } from "lucide-react";
+import type { LucideProps } from "lucide-react";
+import type { ComponentType } from "react";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/animations/reveal";
 import { site } from "@/data/site";
+import { CodeforcesBrandIcon, WhatsAppBrandIcon, XBrandIcon } from "@/components/ui/brand-icons";
 
 const contactSocials: {
   label: string;
   href: string;
-  Icon: LucideIcon;
+  Icon: ComponentType<LucideProps>;
   external?: boolean;
 }[] = [
   { label: "GitHub", href: site.links.github, Icon: Github, external: true },
   { label: "LinkedIn", href: site.links.linkedin, Icon: Linkedin, external: true },
-  { label: "Codeforces", href: site.links.codeforces, Icon: Code2, external: true },
+  { label: "Codeforces", href: site.links.codeforces, Icon: CodeforcesBrandIcon, external: true },
   { label: "Email", href: `mailto:${site.email}`, Icon: Mail },
-  { label: "WhatsApp", href: site.links.whatsapp, Icon: Phone, external: true },
+  { label: "WhatsApp", href: site.links.whatsapp, Icon: WhatsAppBrandIcon, external: true },
   { label: "Facebook", href: site.links.facebook, Icon: Facebook, external: true },
-  { label: "X", href: site.links.x, Icon: Twitter, external: true },
+  { label: "X", href: site.links.x, Icon: XBrandIcon, external: true },
 ];
 
 export function Contact() {
@@ -145,7 +144,7 @@ export function Contact() {
                 <dd><a href={`mailto:${site.email}`}>{site.email}</a></dd>
               </div>
               <div className="contact-detail">
-                <dt><Phone size={16} aria-hidden="true" /> WHATSAPP</dt>
+                <dt><WhatsAppBrandIcon size={16} aria-hidden="true" /> WHATSAPP</dt>
                 <dd><a href={site.links.whatsapp} target="_blank" rel="noopener noreferrer">+880 1521 729325</a></dd>
               </div>
               <div className="contact-detail">
