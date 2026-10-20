@@ -120,7 +120,6 @@ function TypewriterRole() {
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const [introReady, setIntroReady] = useState(false);
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let disposed = false;
@@ -131,23 +130,20 @@ export function Hero() {
       if (disposed || started) return;
       started = true;
       if (reduce) {
-        setIntroReady(true);
         return;
       }
       void import("gsap").then(({ default: gsap }) => {
         if (disposed || !sectionRef.current) return;
         const ctx = gsap.context(() => {
-          gsap.fromTo(".hero-portrait-image", { opacity: 0, x: 24 }, { opacity: 0.88, x: 0, duration: 1.2, ease: "power2.out" });
+          gsap.fromTo(".hero-portrait-image", { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 1.2, ease: "power2.out", clearProps: "opacity,transform" });
           gsap.fromTo(".hero-word", { yPercent: 110, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 1.05, ease: "power3.out", stagger: 0.11, delay: 0.13 });
           gsap.fromTo(".hero-reveal", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out", stagger: 0.1, delay: 0.54 });
           gsap.fromTo(".hero-support-reveal", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.65, ease: "power2.out", stagger: 0.08, delay: 0.75 });
           gsap.fromTo(".hero-socials a", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", stagger: 0.045, delay: 1.05 });
         }, sectionRef);
         cleanup = () => ctx.revert();
-        setIntroReady(true);
       }).catch((error: unknown) => {
         console.error("Unable to load the Hero entrance animation.", error);
-        setIntroReady(true);
       });
     };
     if (document.querySelector("[data-intro-overlay='true']")) {
@@ -164,15 +160,15 @@ export function Hero() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="hero" id="top" aria-labelledby="hero-title" style={{ visibility: introReady ? "visible" : "hidden" }}>
+    <section ref={sectionRef} className="hero" id="top" aria-labelledby="hero-title">
       <div className="hero-portrait" aria-hidden="true">
         <Image
           className="hero-portrait-image"
-          src="/images/siam-portrait.jpeg"
+          src="/images/siam-portrait-cutout.webp"
           alt=""
           fill
           priority
-          sizes="(max-width: 630px) 100vw, 68vw"
+          sizes="(max-width: 630px) 56vw, (max-width: 1120px) 53vw, (max-width: 1733px) 60vw, 1040px"
         />
       </div>
       <Container className="hero-inner">

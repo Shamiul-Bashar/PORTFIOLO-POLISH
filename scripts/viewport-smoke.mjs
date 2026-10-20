@@ -9,7 +9,7 @@ import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 
 const url = "http://127.0.0.1:4173";
-const widths = [360, 390, 768, 1280, 1440];
+const widths = [360, 390, 430, 768, 1024, 1280, 1440, 1920];
 const output = join(process.cwd(), "viewport-previews");
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -45,13 +45,15 @@ async function main() {
       page.on("pageerror", (error) => errors.push(error.message));
       await page.goto(url, { waitUntil: "domcontentloaded", timeout: 45000 });
       await page.locator("#top").waitFor({ state: "visible", timeout: 12000 });
-      // The Hero is revealed before its GSAP word/paragraph entrance completes.
-      // Wait for the FINAL visible state, not the initial blank animation frame.
+      // The artwork is visible without JS. Wait for the intro and optional
+      // entrance to finish before inspecting the final poster presentation.
+      await page.locator("[data-intro-overlay='true']").waitFor({ state: "detached", timeout: 12000 });
       await page.waitForFunction(() => {
-        const title = document.querySelector(".hero-word");
+        const artwork = document.querySelector(".hero-portrait-image");
+        const frame = document.querySelector(".hero-portrait");
         const intro = document.querySelector(".hero-introduction");
-        return !!title && !!intro &&
-          Number(getComputedStyle(title).opacity) > 0.98 &&
+        return artwork instanceof HTMLImageElement && artwork.complete && artwork.naturalWidth > 0 && !!frame && !!intro &&
+          Number(getComputedStyle(frame).opacity) === 1 &&
           Number(getComputedStyle(intro).opacity) > 0.98;
       }, null, { timeout: 12000 });
       await page.locator("#upcoming-projects").waitFor({ state: "attached" });
