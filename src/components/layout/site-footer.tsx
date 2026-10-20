@@ -3,7 +3,7 @@ import {
   Code2,
   Facebook,
   Github,
-  Instagram,
+  Twitter,
   Linkedin,
   Mail,
   Phone,
@@ -25,7 +25,7 @@ const footerSocials: {
   { label: "Email", href: `mailto:${site.email}`, Icon: Mail },
   { label: "WhatsApp", href: site.links.whatsapp, Icon: Phone, external: true },
   { label: "Facebook", href: site.links.facebook, Icon: Facebook, external: true },
-  { label: "Instagram", href: site.links.instagram, Icon: Instagram, external: true },
+  { label: "X", href: site.links.x, Icon: Twitter, external: true },
 ];
 
 const footerLinks = [

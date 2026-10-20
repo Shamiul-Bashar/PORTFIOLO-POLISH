@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { ArrowDown, ArrowUpRight, Code2, Facebook, Github, Instagram, Linkedin, Mail, MoveUpRight, Smartphone } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Code2, Facebook, Github, Twitter, Linkedin, Mail, MoveUpRight, Smartphone } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { site } from "@/data/site";
 
@@ -14,7 +14,7 @@ const heroSocialLinks = [
   { label: "Email", href: `mailto:${site.email}`, Icon: Mail, external: false },
   { label: "WhatsApp", href: site.links.whatsapp, Icon: Smartphone, external: true },
   { label: "Facebook", href: site.links.facebook, Icon: Facebook, external: true },
-  { label: "Instagram", href: site.links.instagram, Icon: Instagram, external: true },
+  { label: "X", href: site.links.x, Icon: Twitter, external: true },
 ] as const;
 
 const PROFESSIONAL_ROLES = [
@@ -184,7 +184,7 @@ export function Hero() {
             <TypewriterRole />
             <p className="hero-introduction hero-support-reveal">I&apos;m a Computer Science &amp; Engineering student at Khulna University of Engineering &amp; Technology (KUET), passionate about software engineering, problem solving, and building modern digital experiences. I enjoy transforming ideas into reliable, user-focused applications while continuously exploring new technologies and improving my development skills.</p>
             <div className="hero-actions hero-support-reveal">
-              <a href={site.links.resume} className="hero-resume-button" target="_blank" rel="noreferrer">Download Resume <MoveUpRight size={15} aria-hidden="true" /></a>
+              <a href={site.links.resume} download="MD_Shamiul_Basher_Siam_Resume.pdf" className="hero-resume-button">Download Resume <MoveUpRight size={15} aria-hidden="true" /></a>
               <Link href="/#work" className="hero-project-button">View Projects <ArrowUpRight size={15} aria-hidden="true" /></Link>
               <Link href="/#contact" className="hero-contact-button">Contact Me <ArrowUpRight size={14} aria-hidden="true" /></Link>
             </div>

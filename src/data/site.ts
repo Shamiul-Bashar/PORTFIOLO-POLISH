@@ -20,10 +20,10 @@ export const site = {
   links: {
     github: "https://github.com/Shamiul-Bashar",
     linkedin: "https://www.linkedin.com/in/shamiulbasher",
-    resume: "https://drive.google.com/file/d/1JRXVwAh7rpnf1wtL3NXK8nPdaKOLAgBx/view?usp=drive_link",
+    resume: "/Shamiul-Bashar-Siam-Resume.pdf",
     codeforces: "https://codeforces.com/profile/Shamiul_Bashar",
     whatsapp: "https://wa.me/8801521729325",
     facebook: "https://www.facebook.com/share/1B8BFgCfYB/",
-    instagram: "https://www.instagram.com/siam_bashar?igsh=MTQ2OTEybDA0dmVidg==",
+    x: "https://x.com/SIAM_BASHAR",
   },
 } as const;

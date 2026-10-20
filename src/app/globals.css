@@ -953,3 +953,14 @@ html { scroll-padding-top: 82px; }
 @media (max-width: 630px) {
   .hero-portrait { top: 190px; right: -12px; bottom: auto; width: 56%; height: auto; aspect-ratio: 942 / 1077; -webkit-mask-image: linear-gradient(to top, transparent, #000 42%); mask-image: linear-gradient(to top, transparent, #000 42%); }
 }
+
+
+/* Desktop-only visual balance: keep the original typography and mobile portrait intact. */
+@media (min-width: 1121px) {
+  .hero-portrait { right: clamp(68px, 7vw, 140px); }
+}
+@media (min-width: 901px) and (max-width: 1120px) {
+  .hero-portrait { right: 28px; }
+}
+.contact-form-status.is-success { color: #c5e5ab; }
+.contact-form-status.is-error { color: #ff9b92; }

@@ -205,8 +205,9 @@ export function answerPortfolioQuestion(raw: string, context: AssistantContext):
 
   if (matches(q, ["resume", "cv", "curriculum vitae"])) return respond("Here's Siam's current resume link.", [{ label: "View Resume", href: site.links.resume }]);
 
-  if (matches(q, ["linkedin", "facebook", "instagram", "codeforces"])) {
-    const platform = (["linkedin", "facebook", "instagram", "codeforces"] as const).find((key) => containsTerm(q, key));
+  if (matches(q, ["linkedin", "facebook", "twitter", "x", "codeforces"])) {
+    const platform = (["linkedin", "facebook", "codeforces"] as const).find((key) => containsTerm(q, key));
+    if (matches(q, ["twitter", "x"])) return respond("Here is Siam\u2019s X profile.", [{ label: "X / Twitter", href: site.links.x }]);
     if (platform) return respond(`Here's Siam's ${platform === "linkedin" ? "LinkedIn" : platform} profile.`, [{ label: platform.toUpperCase(), href: site.links[platform] }]);
   }
   if (matches(q, ["whatsapp", "phone", "number", "call"])) {

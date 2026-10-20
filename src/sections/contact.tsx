@@ -6,7 +6,7 @@ import {
   Code2,
   Facebook,
   Github,
-  Instagram,
+  Twitter,
   Linkedin,
   Mail,
   MapPin,
@@ -30,20 +30,25 @@ const contactSocials: {
   { label: "Email", href: `mailto:${site.email}`, Icon: Mail },
   { label: "WhatsApp", href: site.links.whatsapp, Icon: Phone, external: true },
   { label: "Facebook", href: site.links.facebook, Icon: Facebook, external: true },
-  { label: "Instagram", href: site.links.instagram, Icon: Instagram, external: true },
+  { label: "X", href: site.links.x, Icon: Twitter, external: true },
 ];
 
 export function Contact() {
   const [isPreparing, setIsPreparing] = useState(false);
+  const [formStatusKind, setFormStatusKind] = useState<"success" | "error" | "idle">("idle");
   const [formStatus, setFormStatus] = useState("");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isPreparing) return;
+
     const form = event.currentTarget;
     const formData = new FormData(form);
 
-    if (formData.get("website")) {
-      setFormStatus("Unable to prepare this message. Please contact me directly.");
+    // A hidden honeypot rejects automated submissions without touching the email service.
+    if (String(formData.get("website") ?? "").trim()) {
+      setFormStatusKind("error");
+      setFormStatus("Unable to send this message. Please contact me directly.");
       return;
     }
 
@@ -51,22 +56,53 @@ export function Contact() {
     const email = String(formData.get("email") ?? "").trim();
     const subject = String(formData.get("subject") ?? "").trim();
     const message = String(formData.get("message") ?? "").trim();
-    const body = `Name: ${name}\nEmail: ${email}\n\n${message}`;
-    const mailto = `mailto:${site.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    if (!name || !email || !subject || !message || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+      setFormStatusKind("error");
+      setFormStatus("Please complete all fields and enter a valid email address.");
+      return;
+    }
 
     setIsPreparing(true);
-    setFormStatus(
-      "Opening your email app. Review and send the message there to complete delivery.",
-    );
-    window.setTimeout(() => {
-      window.location.href = mailto;
-      window.setTimeout(() => {
-        setIsPreparing(false);
-        setFormStatus(
-          `If your email app doesn't open, email ${site.email} directly.`,
-        );
-      }, 1600);
-    }, 150);
+    setFormStatusKind("idle");
+    setFormStatus("Sending your message securely...");
+    try {
+      // Reuses the EmailJS service, template and *public* browser key from
+      // the original Portfolio; no secret/private credentials are stored here.
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 15000);
+      let response: Response;
+      try {
+        response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            service_id: "service_5pdvxyq",
+            template_id: "template_5j7g5cf",
+            user_id: "pgJsj6YimszKufj5x",
+            template_params: {
+              from_name: name,
+              from_email: email,
+              reply_to: email,
+              subject,
+              message,
+            },
+          }),
+          signal: controller.signal,
+        });
+      } finally {
+        window.clearTimeout(timeout);
+      }
+      if (!response.ok) throw new Error("Email service returned " + response.status);
+      form.reset();
+      setFormStatusKind("success");
+      setFormStatus("Message submitted successfully! Thank you for reaching out.");
+    } catch (error) {
+      console.error("Contact form submission failed:", error);
+      setFormStatusKind("error");
+      setFormStatus(`Message could not be sent. Please email ${site.email} directly.`);
+    } finally {
+      setIsPreparing(false);
+    }
   }
 
   return (
@@ -121,8 +157,7 @@ export function Contact() {
             <a
               className="contact-resume"
               href={site.links.resume}
-              target="_blank"
-              rel="noopener noreferrer"
+              download="MD_Shamiul_Basher_Siam_Resume.pdf"
             >
               DOWNLOAD RESUME <ArrowUpRight size={17} aria-hidden="true" />
             </a>
@@ -205,12 +240,12 @@ export function Contact() {
                 type="submit"
                 disabled={isPreparing}
               >
-                {isPreparing ? "OPENING EMAIL..." : "SEND MESSAGE"}
+                {isPreparing ? "SENDING..." : "SEND MESSAGE"}
                 <ArrowUpRight size={17} aria-hidden="true" />
               </button>
               <p
                 id="contact-form-status"
-                className="contact-form-status"
+                className={`contact-form-status${formStatusKind === "success" ? " is-success" : formStatusKind === "error" ? " is-error" : ""}`}
                 role="status"
                 aria-live="polite"
               >

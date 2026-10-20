@@ -15,6 +15,7 @@ export const projects: PortfolioProject[] = [
     technologies: ["C++", "React", "TypeScript", "Graph Algorithms"],
     repository: "https://github.com/Shamiul-Bashar/CrisisMesh-2.0-Dynamic-Emergency-Decision-Routing-Resource-Allocation-Simulator",
     demo: "https://crisis-mesh-2-0-dynamic-emergency-d.vercel.app",
+    image: "/projects/crisismesh-web.png",
     featured: true,
   },
   {

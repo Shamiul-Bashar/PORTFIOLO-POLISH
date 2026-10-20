@@ -210,6 +210,40 @@ async function main() {
       console.log(`PASS Ask Siam AI ${width}px: global trigger, grounded replies, context, reset, Escape, layout`);
     }
 
+    // Verify both the self-hosted resume and real CrisisMesh screenshot are shipped.
+    for (const asset of ["/Shamiul-Bashar-Siam-Resume.pdf", "/projects/crisismesh-web.png"]) {
+      const response = await fetch(url + asset);
+      if (!response.ok()) throw new Error(`Static asset unavailable: ${asset} (${response.status})`);
+      console.log(`PASS static asset: ${asset}`);
+    }
+
+    // Contact form submits via EmailJS, not mailto. Mock delivery to avoid
+    // sending real messages from automated tests.
+    {
+      const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+      await page.goto(url, { waitUntil: "domcontentloaded" });
+      await page.locator("[data-intro-overlay='true']").waitFor({ state: "detached", timeout: 12000 });
+      let submissions = 0;
+      await page.route("https://api.emailjs.com/api/v1.0/email/send", async (route) => {
+        const payload = route.request().postDataJSON();
+        if (payload.service_id !== "service_5pdvxyq" || payload.template_params.from_email !== "visitor@example.com") {
+          throw new Error("Contact form payload invalid");
+        }
+        submissions += 1;
+        await route.fulfill({ status: 200, body: "OK", contentType: "text/plain" });
+      });
+      await page.locator('input[name="name"]').fill("Site Visitor");
+      await page.locator('input[name="email"]').fill("visitor@example.com");
+      await page.locator('input[name="subject"]').fill("Hello");
+      await page.locator('textarea[name="message"]').fill("Contact form functional test");
+      await page.getByRole("button", { name: /send message/i }).click();
+      await page.getByText(/message submitted successfully/i).waitFor({ timeout: 12000 });
+      if (submissions !== 1) throw new Error("Contact form did not submit exactly once");
+      if ((await page.locator('textarea[name="message"]').inputValue()) !== "") throw new Error("Contact form did not reset");
+      await page.close();
+      console.log("PASS: EmailJS contact form submission (mocked; no external mail)");
+    }
+
     const casePage = await browser.newPage();
     const resp = await casePage.goto(url + "/projects/araf-azreen-wedding", { waitUntil: "domcontentloaded" });
     if (!resp?.ok()) throw new Error("Wedding project case-study route unavailable");
