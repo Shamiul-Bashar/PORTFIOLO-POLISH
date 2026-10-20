@@ -92,6 +92,63 @@ async function main() {
       console.log(`PASS ${width}px: hero readable, no overflow, correct project placement, no runtime exception`);
       await page.close();
     }
+
+    // All Projects: verify combined Completed + In Development archive,
+    // working filters/search, expected destinations, and responsive overflow.
+    for (const width of [390, 1280]) {
+      const page = await browser.newPage({ viewport: { width, height: 900 }, deviceScaleFactor: 1 });
+      const errors = [];
+      page.on("pageerror", (error) => errors.push(error.message));
+      const response = await page.goto(url + "/projects", { waitUntil: "domcontentloaded", timeout: 45000 });
+      if (!response?.ok()) throw new Error(`Archive ${width}px: /projects route unavailable`);
+      await page.getByRole("heading", { level: 1, name: /all projects/i }).waitFor();
+      await page.evaluate(async () => { await document.fonts.ready; });
+
+      const completed = page.locator('[data-archive-section="completed"] .archive-completed-entry');
+      const development = page.locator('[data-archive-section="development"] .archive-upcoming-entry');
+      if (await completed.count() !== 6 || await development.count() !== 3) {
+        throw new Error(`Archive ${width}px: expected 6 completed and 3 in development`);
+      }
+      if (!(await page.locator('[data-archive-section="completed"]').getByText("Araf & Azreen", { exact: false }).count())) {
+        throw new Error(`Archive ${width}px: wedding project missing`);
+      }
+      if (!(await page.locator('[data-archive-section="development"]').getByText("ACADEMICOS", { exact: true }).count())) {
+        throw new Error(`Archive ${width}px: AcademicOS missing from development`);
+      }
+      if (await page.locator('[data-archive-section="completed"]').getByText("AcademicOS", { exact: true }).count()) {
+        throw new Error(`Archive ${width}px: AcademicOS incorrectly marked completed`);
+      }
+      await page.locator('[data-project-filter="development"]').click();
+      if (await page.locator('[data-archive-section="completed"]').count() !== 0 || await development.count() !== 3) {
+        throw new Error(`Archive ${width}px: development filter failed`);
+      }
+      await page.locator('[data-project-filter="completed"]').click();
+      if (await completed.count() !== 6 || await page.locator('[data-archive-section="development"]').count() !== 0) {
+        throw new Error(`Archive ${width}px: completed filter failed`);
+      }
+      await page.locator('[data-project-filter="all"]').click();
+      await page.locator("#archive-project-search").fill("Expo");
+      if (await development.count() !== 1 || await completed.count() !== 0) {
+        throw new Error(`Archive ${width}px: technology search failed`);
+      }
+      await page.locator("#archive-project-search").fill("no-such-project-987");
+      await page.getByRole("heading", { name: "No matching projects." }).waitFor();
+      await page.getByRole("button", { name: /show all projects/i }).click();
+      if (await completed.count() !== 6 || await development.count() !== 3) {
+        throw new Error(`Archive ${width}px: reset all projects failed`);
+      }
+
+      // Layout audit after interaction, including dynamic filter controls.
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      if (overflow > 3) throw new Error(`Archive ${width}px: ${overflow}px horizontal overflow`);
+      const repoLinks = await page.locator('[data-archive-section="development"] .archive-repository-link').count();
+      if (repoLinks !== 3) throw new Error(`Archive ${width}px: upcoming repository links missing`);
+      if (errors.length) throw new Error(`Archive ${width}px: ${errors.join(" | ")}`);
+      await page.screenshot({ path: join(output, `project-archive-${width}.png`), fullPage: true, animations: "disabled" });
+      await page.close();
+      console.log(`PASS archive ${width}px: all 9 items, interactive filters and search, no overflow`);
+    }
+
     const casePage = await browser.newPage();
     const resp = await casePage.goto(url + "/projects/araf-azreen-wedding", { waitUntil: "domcontentloaded" });
     if (!resp?.ok()) throw new Error("Wedding project case-study route unavailable");
