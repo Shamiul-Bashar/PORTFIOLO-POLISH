@@ -71,6 +71,10 @@ async function main() {
       if (!metrics.upcoming.some((name) => name?.includes("ACADEMICOS"))) throw new Error(`${width}px: AcademicOS missing from Upcoming`);
       if (metrics.upcoming.length !== 3) throw new Error(`${width}px: expected three upcoming projects`);
       if (metrics.sections.indexOf("upcoming-projects") < metrics.sections.indexOf("work")) throw new Error(`${width}px: invalid section order`);
+      const archiveLink = page.locator(".all-work-link");
+      if ((await archiveLink.getAttribute("href")) !== "/projects") {
+        throw new Error(`${width}px: View All Projects does not target the project archive`);
+      }
       if (errors.length) throw new Error(`${width}px: runtime error: ${errors[0]}`);
       await page.screenshot({ path: join(output, `homepage-${width}.png`), animations: "disabled" });
 
@@ -144,6 +148,14 @@ async function main() {
       const repoLinks = await page.locator('[data-archive-section="development"] .archive-repository-link').count();
       if (repoLinks !== 3) throw new Error(`Archive ${width}px: upcoming repository links missing`);
       if (errors.length) throw new Error(`Archive ${width}px: ${errors.join(" | ")}`);
+      // Reset filter-interaction scroll/focus before full-page screenshots,
+      // otherwise the fixed navbar appears in the middle of stitched captures.
+      await page.evaluate(() => {
+        if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+        window.scrollTo(0, 0);
+      });
+      await page.waitForFunction(() => window.scrollY < 5, null, { timeout: 9000 });
+      await page.waitForTimeout(180);
       await page.screenshot({ path: join(output, `project-archive-${width}.png`), fullPage: true, animations: "disabled" });
       await page.close();
       console.log(`PASS archive ${width}px: all 9 items, interactive filters and search, no overflow`);
