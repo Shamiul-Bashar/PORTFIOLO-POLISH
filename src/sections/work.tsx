@@ -64,14 +64,16 @@ export function Work() {
   }
 
   function onPointerDown(event: PointerEvent<HTMLDivElement>) {
-    if ((event.pointerType === "mouse" && event.button !== 0) || !trackRef.current) return;
+    // Touch gestures stay native: allow vertical page scroll *and* horizontal
+    // carousel swipes. Mouse dragging is the only custom pointer interaction.
+    if (event.pointerType !== "mouse" || event.button !== 0 || !trackRef.current) return;
     dragRef.current = { active: true, start: event.clientX, left: trackRef.current.scrollLeft, moved: false };
   }
 
   function onPointerMove(event: PointerEvent<HTMLDivElement>) {
     const state = dragRef.current;
     const track = trackRef.current;
-    if (!state.active || !track) return;
+    if (event.pointerType !== "mouse" || !state.active || !track) return;
     const movedBy = event.clientX - state.start;
     if (Math.abs(movedBy) > 7) {
       state.moved = true;

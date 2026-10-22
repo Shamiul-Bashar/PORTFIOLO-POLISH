@@ -797,7 +797,7 @@ html { scroll-padding-top: 82px; }
   .hero-topline { font-size: 9px; letter-spacing: .1em; }
   .hero-socials a { width: 44px; height: 44px; }
   .hero-resume-button, .hero-project-button, .hero-contact-button { min-height: 44px; }
-  .carousel-track { touch-action: pan-x; scroll-padding-inline: 2px; }
+  .carousel-track { touch-action: pan-x pan-y; scroll-padding-inline: 2px; }
   .upcoming-grid { grid-template-columns: 1fr; }
   .upcoming-cover { height: clamp(195px, 57vw, 270px); }
   .upcoming-card-content { min-height: 0; padding-bottom: 25px; }

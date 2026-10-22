@@ -6,7 +6,8 @@ import type Lenis from "lenis";
 /** Optional progressive enhancement: native scroll remains functional without JS. */
 export function SmoothScrollProvider() {
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // On touchscreens, native vertical scrolling must always win over visual effects.
+    if (window.matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)").matches) return;
     let disposed = false;
     let lenis: Lenis | undefined;
     let animationFrame = 0;
