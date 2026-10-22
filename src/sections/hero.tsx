@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowDown, ArrowUpRight, Facebook, Github, Linkedin, Mail, MoveUpRight } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { site } from "@/data/site";
@@ -119,49 +119,13 @@ function TypewriterRole() {
   );
 }
 
+// The cinematic intro already owns the first-load transition.
+// Playing a second GSAP "from" animation after the intro disappears made
+// the settled hero vanish and reappear, which looked like a page reload.
+// Render the hero once; keep only the intentional typewriter motion.
 export function Hero() {
-  const sectionRef = useRef<HTMLElement>(null);
-  useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let disposed = false;
-    let started = false;
-    let frame = 0;
-    let cleanup: (() => void) | undefined;
-    const startHeroEntrance = () => {
-      if (disposed || started) return;
-      started = true;
-      if (reduce) {
-        return;
-      }
-      void import("gsap").then(({ default: gsap }) => {
-        if (disposed || !sectionRef.current) return;
-        const ctx = gsap.context(() => {
-          gsap.fromTo(".hero-portrait-image", { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 1.2, ease: "power2.out", clearProps: "opacity,transform" });
-          gsap.fromTo(".hero-word", { yPercent: 110, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 1.05, ease: "power3.out", stagger: 0.11, delay: 0.13 });
-          gsap.fromTo(".hero-reveal", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out", stagger: 0.1, delay: 0.54 });
-          gsap.fromTo(".hero-support-reveal", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.65, ease: "power2.out", stagger: 0.08, delay: 0.75 });
-          gsap.fromTo(".hero-socials a", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", stagger: 0.045, delay: 1.05 });
-        }, sectionRef);
-        cleanup = () => ctx.revert();
-      }).catch((error: unknown) => {
-        console.error("Unable to load the Hero entrance animation.", error);
-      });
-    };
-    if (document.querySelector("[data-intro-overlay='true']")) {
-      window.addEventListener("portfolio:intro-complete", startHeroEntrance, { once: true });
-    } else {
-      frame = requestAnimationFrame(startHeroEntrance);
-    }
-    return () => {
-      disposed = true;
-      cancelAnimationFrame(frame);
-      window.removeEventListener("portfolio:intro-complete", startHeroEntrance);
-      cleanup?.();
-    };
-  }, []);
-
   return (
-    <section ref={sectionRef} className="hero" id="top" aria-labelledby="hero-title">
+    <section className="hero" id="top" aria-labelledby="hero-title">
       <div className="hero-portrait" aria-hidden="true">
         <Image
           className="hero-portrait-image"

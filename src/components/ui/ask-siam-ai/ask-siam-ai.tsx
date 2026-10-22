@@ -5,43 +5,74 @@ import {
   type FormEvent,
 } from "react";
 import {
-  ArrowUpRight, Bot, MessageCircle, RotateCcw, SendHorizontal, X,
+  ArrowUpRight, RotateCcw, SendHorizontal, X,
 } from "lucide-react";
 import {
-  answerPortfolioQuestion,
-  INITIAL_CONTEXT,
-  type AssistantContext,
   type AssistantReply,
 } from "@/lib/siam-assistant";
+import {
+  converseWithSiam, INITIAL_CONVERSATION, type ConversationContext,
+} from "@/lib/siam-conversation";
 import styles from "./ask-siam-ai.module.css";
 
 type Message = AssistantReply & { id: number; role: "assistant" | "user" };
 const WELCOME: Message = {
   id: 0,
   role: "assistant",
-  text: "Hi! I'm Ask Siam AI — your guide to this portfolio. Ask about Siam's projects, skills, education, or how to get in touch.",
+  text: "Hello! I'm Ask Siam AI, your personal guide to Siam's portfolio. Say hi, explore a project, ask follow-up questions, or find anything on the site. How can I help?",
 };
 const PROMPTS = [
   { label: "About Siam", query: "Who is Siam?" },
+  { label: "Say Hello", query: "Hi!" },
   { label: "All Projects", query: "Show me your projects" },
   { label: "In Development", query: "What is currently in development?" },
   { label: "Tech Stack", query: "What are his skills and tech stack?" },
   { label: "Education", query: "Tell me about Siam's education" },
   { label: "Contact", query: "How can I contact Siam?" },
+  { label: "What Can He Build?", query: "What can Siam build?" },
 ] as const;
 
 const STARTER_QUESTIONS = [
-  { label: "What makes the wedding website special?", query: "Tell me about the wedding website" },
+  { label: "What can you help me explore?", query: "What can you do?" },
   { label: "Which projects are being developed?", query: "What is currently in development?" },
   { label: "How was CrisisMesh built?", query: "Tell me about CrisisMesh 2" },
 ] as const;
+
+
+/** Purpose-built robot-head mark; a real bot identity, not a message bubble. */
+function RobotHeadMark({ size = 36 }: { size?: number }) {
+  return (
+    <svg
+      className={styles.robotMark}
+      width={size}
+      height={size}
+      viewBox="0 0 64 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      focusable="false"
+      aria-hidden="true"
+    >
+      <path d="M32 12V6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="32" cy="5.5" r="3" fill="currentColor" />
+      <rect x="10" y="15" width="44" height="39" rx="12" fill="#16160F" stroke="currentColor" strokeWidth="3.3" />
+      <path d="M7 30H4V40H7M57 30H60V40H57" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+      <rect className={styles.robotVisor} x="17" y="24" width="30" height="17" rx="7.5" fill="currentColor" fillOpacity=".11" />
+      <g className={styles.robotEyes} fill="currentColor">
+        <rect x="21.5" y="29" width="7" height="8" rx="2.6" />
+        <rect x="35.5" y="29" width="7" height="8" rx="2.6" />
+      </g>
+      <path d="M25 46C29.5 49.5 34.5 49.5 39 46" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" />
+      <path d="M24 55V58M40 55V58" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 export function AskSiamAI() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([WELCOME]);
   const [replyPending, setReplyPending] = useState(false);
-  const contextRef = useRef<AssistantContext>({ ...INITIAL_CONTEXT });
+  const contextRef = useRef<ConversationContext>({ ...INITIAL_CONVERSATION });
   const pendingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const messageIdRef = useRef(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -56,7 +87,7 @@ export function AskSiamAI() {
   const reset = useCallback(() => {
     if (pendingRef.current) clearTimeout(pendingRef.current);
     pendingRef.current = null;
-    contextRef.current = { ...INITIAL_CONTEXT };
+    contextRef.current = { ...INITIAL_CONVERSATION };
     messageIdRef.current = 0;
     setMessages([WELCOME]);
     setReplyPending(false);
@@ -68,7 +99,7 @@ export function AskSiamAI() {
     const text = raw.trim().slice(0, 400);
     if (!text || pendingRef.current) return;
     const user: Message = { id: ++messageIdRef.current, role: "user", text };
-    const response = answerPortfolioQuestion(text, contextRef.current);
+    const response = converseWithSiam(text, contextRef.current);
     contextRef.current = response.context;
     setMessages((previous) => [...previous, user]);
     setInput("");
@@ -125,7 +156,7 @@ export function AskSiamAI() {
         >
           <header className={styles.header}>
             <div className={styles.identity}>
-              <span className={styles.assistantIcon} aria-hidden="true"><Bot size={22} strokeWidth={1.65} /></span>
+              <span className={styles.assistantIcon} aria-hidden="true"><RobotHeadMark size={27} /></span>
               <div>
                 <h2 id="ask-siam-heading">Ask Siam <span>AI</span></h2>
                 <p id="ask-siam-description">Personal portfolio assistant</p>
@@ -143,7 +174,7 @@ export function AskSiamAI() {
 
           <div className={styles.introLine}>
             <span className={styles.onlineDot} aria-hidden="true" />
-            ANSWERS FROM THIS PORTFOLIO · NO EXTERNAL AI API
+            YOUR PORTFOLIO GUIDE · CONVERSATIONAL BOT
           </div>
 
           <div className={styles.transcript} ref={scrollRef} role="log" aria-live="polite" aria-relevant="additions" aria-label="Chat messages">
@@ -221,7 +252,7 @@ export function AskSiamAI() {
               data-ask-siam-input
               value={input}
               onChange={(event) => setInput(event.target.value.slice(0, 400))}
-              placeholder="Ask about Siam's work..."
+              placeholder="Ask me anything about Siam..."
               maxLength={400}
               enterKeyHint="send"
               autoComplete="off"
@@ -235,7 +266,7 @@ export function AskSiamAI() {
               <SendHorizontal size={18} aria-hidden="true" />
             </button>
           </form>
-          <p className={styles.footnote}>Portfolio-grounded answers · Not a general-purpose chatbot</p>
+          <p className={styles.footnote}>Verified portfolio knowledge · No external AI service</p>
         </section>
       )}
 
@@ -254,7 +285,7 @@ export function AskSiamAI() {
       >
         <span className={styles.floatingLabel} aria-hidden="true">{isOpen ? "CLOSE ASSISTANT" : "ASK SIAM AI"}</span>
         <span className={styles.floatingIcon} aria-hidden="true">
-          {isOpen ? <X size={25} /> : <MessageCircle size={25} strokeWidth={1.7} />}
+          {isOpen ? <X size={25} /> : <RobotHeadMark size={38} />}
         </span>
         {!isOpen && <span className={styles.floatingStatus} aria-hidden="true" />}
       </button>

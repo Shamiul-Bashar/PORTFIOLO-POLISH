@@ -210,6 +210,118 @@ async function main() {
       console.log(`PASS Ask Siam AI ${width}px: global trigger, grounded replies, context, reset, Escape, layout`);
     }
 
+
+    // Regression: once the intro goes away, the hero must stay settled;
+    // previously a late GSAP import reset it and caused an apparent reload.
+    {
+      const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+      await page.goto(url, { waitUntil: "domcontentloaded" });
+      await page.locator("[data-intro-overlay='true']").waitFor({ state: "detached", timeout: 12000 });
+      const before = await page.locator(".hero-word").first().evaluate((el) => ({
+        opacity: getComputedStyle(el).opacity, transform: getComputedStyle(el).transform,
+      }));
+      await page.waitForTimeout(2200);
+      const after = await page.locator(".hero-word").first().evaluate((el) => ({
+        opacity: getComputedStyle(el).opacity, transform: getComputedStyle(el).transform,
+      }));
+      if (before.opacity !== "1" || after.opacity !== "1" || before.transform !== after.transform) {
+        throw new Error("Hero reset or replayed after the intro");
+      }
+      await page.close();
+      console.log("PASS hero: one intro, no delayed visual reset");
+    }
+
+    // The floating launcher must be a recognizable robot head; conversations
+    // must understand greetings, goodbyes, portfolio guidance, and follow-ups.
+    {
+      const page = await browser.newPage({ viewport: { width: 390, height: 850 } });
+      await page.goto(url + "/projects", { waitUntil: "domcontentloaded" });
+      const trigger = page.locator("[data-ask-siam-trigger]");
+      if ((await trigger.locator("svg path").count()) < 3) throw new Error("Robot-head launcher missing");
+      await trigger.click();
+      const input = page.locator("[data-ask-siam-input]");
+      const exchange = async (message, replyFragment) => {
+        await input.fill(message);
+        await input.press("Enter");
+        await page.getByText(replyFragment, { exact: false }).last().waitFor({ timeout: 12000 });
+      };
+      await exchange("Hello!", "Hello and welcome");
+      await exchange("How are you?", "Doing great");
+      await exchange("Who are you?", "conversational, portfolio-grounded bot");
+      await exchange("Tell me about CrisisMesh 2", "CrisisMesh 2.0 — Completed");
+      await exchange("Tell me more", "Highlights:");
+      await exchange("Show me the education section", "Open Education");
+      await exchange("Bye", "pleasure chatting");
+      if (await page.locator('[data-ask-siam-message="assistant"]').count() !== 8) {
+        throw new Error("Conversation lost a turn or duplicated a response");
+      }
+      await page.close();
+      console.log("PASS robot bot: visual identity, greeting, identity, follow-up, navigation, farewell");
+    }
+
+    // Chromium touch injection tests actual native gesture arbitration: a
+    // vertical finger drag on the carousel must scroll the document; a
+    // horizontal finger drag must still browse project cards.
+    {
+      const context = await browser.newContext({
+        viewport: { width: 390, height: 844 }, deviceScaleFactor: 1,
+        isMobile: true, hasTouch: true,
+      });
+      const page = await context.newPage();
+      await page.goto(url, { waitUntil: "domcontentloaded" });
+      await page.locator("[data-intro-overlay='true']").waitFor({ state: "detached", timeout: 12000 });
+      await page.evaluate(() => {
+        const rect = document.querySelector(".carousel-track").getBoundingClientRect();
+        window.scrollTo({ top: window.scrollY + rect.top - 130, behavior: "instant" });
+      });
+      await page.waitForTimeout(250);
+      const track = page.locator(".carousel-track");
+      const action = await track.evaluate((el) => getComputedStyle(el).touchAction);
+      if (!action.includes("pan-y")) {
+        throw new Error("Carousel touch-action blocks vertical gestures: " + action);
+      }
+      const rect = await track.boundingBox();
+      if (!rect) throw new Error("Carousel not visible for touch gesture test");
+      const x = Math.min(210, rect.x + rect.width / 2);
+      const y = Math.min(540, rect.y + Math.min(rect.height - 50, 280));
+      const client = await context.newCDPSession(page);
+      async function swipe(x0, y0, dx, dy) {
+        await client.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: x0, y: y0 }] });
+        for (let step = 1; step <= 12; step++) {
+          await client.send("Input.dispatchTouchEvent", {
+            type: "touchMove",
+            touchPoints: [{ x: x0 + dx * step / 12, y: y0 + dy * step / 12 }],
+          });
+          await page.waitForTimeout(14);
+        }
+        await client.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+        await page.waitForTimeout(380);
+      }
+      const startY = await page.evaluate(() => window.scrollY);
+      const debug = await page.evaluate(({ x, y }) => ({
+        maxScroll: document.documentElement.scrollHeight - window.innerHeight,
+        point: document.elementFromPoint(x, y)?.closest(".carousel-track")?.className ?? document.elementFromPoint(x, y)?.tagName,
+        rect: document.querySelector(".carousel-track")?.getBoundingClientRect().toJSON(),
+        touchAction: getComputedStyle(document.querySelector(".carousel-track")).touchAction,
+      }), { x, y });
+      console.log("Mobile swipe context:", JSON.stringify({ startY, ...debug }));
+      await swipe(x, y, 0, -220);
+      const endY = await page.evaluate(() => window.scrollY);
+      if (endY - startY < 40) {
+        throw new Error("Vertical mobile scroll blocked on project carousel: " + startY + " -> " + endY);
+      }
+      await track.scrollIntoViewIfNeeded();
+      const rect2 = await track.boundingBox();
+      const startLeft = await track.evaluate((el) => el.scrollLeft);
+      await swipe(Math.min(335, rect2.x + rect2.width - 35), Math.max(120, rect2.y + 210), -180, 0);
+      const endLeft = await track.evaluate((el) => el.scrollLeft);
+      if (endLeft <= startLeft + 8) {
+        throw new Error("Horizontal project swipe stopped working: " + startLeft + " -> " + endLeft);
+      }
+      await context.close();
+      console.log("PASS mobile carousel: vertical page scrolling and horizontal swipe");
+    }
+
     // Verify both the self-hosted resume and real CrisisMesh screenshot are shipped.
     for (const asset of ["/Shamiul-Bashar-Siam-Resume.pdf", "/projects/crisismesh-web.png"]) {
       const response = await fetch(url + asset);

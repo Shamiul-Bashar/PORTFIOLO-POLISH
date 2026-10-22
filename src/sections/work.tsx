@@ -11,7 +11,7 @@ import { projects } from "@/data/projects";
 
 export function Work() {
   const trackRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef({ active: false, start: 0, left: 0, moved: false });
+  const dragRef = useRef({ active: false, start: 0, startY: 0, left: 0, moved: false, direction: "pending" as "pending" | "horizontal" | "vertical" });
   const [active, setActive] = useState(0);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
@@ -64,27 +64,38 @@ export function Work() {
   }
 
   function onPointerDown(event: PointerEvent<HTMLDivElement>) {
-    if ((event.pointerType === "mouse" && event.button !== 0) || !trackRef.current) return;
-    dragRef.current = { active: true, start: event.clientX, left: trackRef.current.scrollLeft, moved: false };
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    const track = trackRef.current;
+    if (!track) return;
+    dragRef.current = {
+      active: true, start: event.clientX, startY: event.clientY,
+      left: track.scrollLeft, moved: false, direction: "pending",
+    };
   }
 
   function onPointerMove(event: PointerEvent<HTMLDivElement>) {
     const state = dragRef.current;
     const track = trackRef.current;
     if (!state.active || !track) return;
-    const movedBy = event.clientX - state.start;
-    if (Math.abs(movedBy) > 7) {
-      state.moved = true;
-      if (event.pointerType === "mouse") {
-        if (!track.classList.contains("is-dragging")) event.currentTarget.setPointerCapture(event.pointerId);
-        track.classList.add("is-dragging");
-        track.scrollLeft = state.left - movedBy;
-      }
+    const dx = event.clientX - state.start;
+    const dy = event.clientY - state.startY;
+    // Distinguish horizontal swipes from vertical page gestures.
+    // CSS touch-action: pan-y delegates vertical motion to the browser.
+    if (state.direction === "pending" && (Math.abs(dx) > 9 || Math.abs(dy) > 9)) {
+      state.direction = Math.abs(dx) > Math.abs(dy) * 1.15 ? "horizontal" : "vertical";
     }
+    if (state.direction !== "horizontal") return;
+    if (!state.moved) {
+      state.moved = true;
+      if (event.pointerType === "mouse") event.currentTarget.setPointerCapture(event.pointerId);
+      track.classList.add("is-dragging");
+    }
+    track.scrollLeft = state.left - dx;
   }
 
   function endDrag() {
     dragRef.current.active = false;
+    dragRef.current.direction = "pending";
     trackRef.current?.classList.remove("is-dragging");
   }
 

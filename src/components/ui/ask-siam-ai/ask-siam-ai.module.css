@@ -177,3 +177,16 @@
   .thinking > span:not(.srOnly) { animation: none; opacity: .8; }
   .widget * { scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+
+/* Custom Ask Siam robot: readable at both 56px and header scale. */
+.robotMark { display: block; flex: 0 0 auto; filter: drop-shadow(0 0 6px rgba(244,204,39,.10)); }
+.robotEyes { transform-origin: 32px 33px; animation: robotBlink 6.4s ease-in-out infinite; }
+.robotVisor { transition: fill-opacity .25s; }
+.floatingButton:hover .robotVisor { fill-opacity: .23; }
+.floatingButton:not([aria-expanded="true"]) .robotMark { animation: robotBreathe 3.4s ease-in-out infinite; }
+@keyframes robotBlink { 0%, 43%, 46%, 100% { transform: scaleY(1); } 44.5% { transform: scaleY(.16); } }
+@keyframes robotBreathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+@media (prefers-reduced-motion: reduce) {
+  .robotEyes, .floatingButton:not([aria-expanded="true"]) .robotMark { animation: none; }
+}
