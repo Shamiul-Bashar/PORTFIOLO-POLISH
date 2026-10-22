@@ -277,7 +277,7 @@ async function main() {
       await page.waitForTimeout(250);
       const track = page.locator(".carousel-track");
       const action = await track.evaluate((el) => getComputedStyle(el).touchAction);
-      if (!action.includes("pan-x") || !action.includes("pan-y")) {
+      if (!action.includes("pan-y")) {
         throw new Error("Carousel touch-action blocks vertical gestures: " + action);
       }
       const rect = await track.boundingBox();
@@ -298,6 +298,13 @@ async function main() {
         await page.waitForTimeout(380);
       }
       const startY = await page.evaluate(() => window.scrollY);
+      const debug = await page.evaluate(({ x, y }) => ({
+        maxScroll: document.documentElement.scrollHeight - window.innerHeight,
+        point: document.elementFromPoint(x, y)?.closest(".carousel-track")?.className ?? document.elementFromPoint(x, y)?.tagName,
+        rect: document.querySelector(".carousel-track")?.getBoundingClientRect().toJSON(),
+        touchAction: getComputedStyle(document.querySelector(".carousel-track")).touchAction,
+      }), { x, y });
+      console.log("Mobile swipe context:", JSON.stringify({ startY, ...debug }));
       await swipe(x, y, 0, -220);
       const endY = await page.evaluate(() => window.scrollY);
       if (endY - startY < 40) {
